@@ -4,7 +4,7 @@ export function SocialLinks({ className = "" }: { className?: string }) {
     return (
         <div className={`flex gap-4 ${className}`}>
             <a
-                href="https://x.com/"
+                href="https://x.com/fami_gb1618"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors"
