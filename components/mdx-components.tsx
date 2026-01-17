@@ -96,14 +96,15 @@ export const CustomComponents = {
         <hr className="my-8 border-t-2 border-foreground/10" {...props} />
     ),
     img: (props: ComponentPropsWithoutRef<'img'>) => {
-        const isMp4 = props.src?.endsWith('.mp4');
-        const isGif = props.src?.endsWith('.gif');
+        const src = props.src as string | undefined;
+        const isMp4 = src?.endsWith('.mp4');
+        const isGif = src?.endsWith('.gif');
 
         if (isMp4) {
             return (
                 <span className="block my-4">
                     <video
-                        src={props.src}
+                        src={src}
                         controls
                         muted
                         loop
@@ -115,7 +116,7 @@ export const CustomComponents = {
         return (
             <figure className="my-8">
                 <Image
-                    src={props.src}
+                    src={src || ''}
                     alt={props.alt || ''}
                     width={800}
                     height={600}
