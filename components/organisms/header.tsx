@@ -14,18 +14,20 @@ export function Header() {
     const closeMenu = () => setIsOpen(false);
 
     return (
-        <nav className="p-4 bg-background text-foreground sticky top-0 z-40 border-b border-foreground/5 backdrop-blur-sm bg-background/80">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <Link href="/" className="font-bold text-xl hover:text-foreground/80 transition-colors flex items-center gap-2" aria-label="Home">
-                    {/* <Logo className="w-8 h-8" /> */}
-                    Top
-                </Link>
+        <>
+            <nav className="p-4 bg-background text-foreground sticky top-0 z-40 border-b border-foreground/5 backdrop-blur-sm bg-background/80">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                    <Link href="/" className="font-bold text-xl hover:text-foreground/80 transition-colors flex items-center gap-2" aria-label="Home">
+                        {/* <Logo className="w-8 h-8" /> */}
+                        Top
+                    </Link>
 
-                <div className="flex items-center space-x-4">
-                    <ThemeToggle />
-                    <MenuToggle isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
+                    <div className="flex items-center space-x-4">
+                        <ThemeToggle />
+                        <MenuToggle isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
+                    </div>
                 </div>
-            </div>
+            </nav>
 
             {/* Overlay */}
             {isOpen && (
@@ -47,6 +49,6 @@ export function Header() {
                     </ul>
                 </div>
             </div>
-        </nav>
+        </>
     );
 }
