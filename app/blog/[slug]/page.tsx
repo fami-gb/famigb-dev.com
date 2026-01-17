@@ -22,6 +22,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             type: 'article',
             publishedTime: frontmatter.date,
         },
+        twitter: {
+            card: 'summary_large_image',
+            title: frontmatter.title,
+            description: frontmatter.description || `${frontmatter.title}についての記事です。`,
+        },
     };
 }
 

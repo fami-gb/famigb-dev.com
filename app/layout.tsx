@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "fami-gb's portfolio",
     description: "ポートフォリオサイトです。",
-    url: 'https://example.com',
+    url: 'https://famigb-dev.com',
     siteName: "fami-gb's portfolio",
     locale: 'ja_JP',
     type: 'website',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: "ポートフォリオサイトです。",
     creator: '@fami_gb1618',
   },
-  metadataBase: new URL('https://example.com'),
+  metadataBase: new URL('https://famigb-dev.com'),
 };
 
 export default function RootLayout({
