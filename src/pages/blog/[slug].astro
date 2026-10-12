@@ -13,10 +13,11 @@ export async function getStaticPaths() {
 const { post, n, prev, next } = Astro.props;
 const { Content, headings } = await render(post);
 const toc = headings.filter((h) => h.depth === 2);
+const stat = `${post.body?.split('\n').length ?? 0}L, ${Buffer.byteLength(post.body ?? '')}B`;
 const logNo = String((await getPosts()).length - n).padStart(4, '0');
 ---
 
-<Base title={post.data.title} description={post.data.description || undefined} file={`archive/${post.id}.md`} active="archive" back="/blog/" type="article">
+<Base title={post.data.title} description={post.data.description || undefined} file={`archive/${post.id}.md`} stat={stat} image={`/og/blog/${post.id}.png`} active="archive" back="/blog/" type="article">
   <div class="doc-head">
     <div class="label panel-head">ARCHIVE // LOG-{logNo}</div>
     <div class="body">
@@ -43,7 +44,7 @@ const logNo = String((await getPosts()).length - n).padStart(4, '0');
         {toc.map((h) => <a href={`#${h.slug}`} class="item" data-toc>{h.text}</a>)}
       </div>
       <div class="progress">
-        <span style="display:flex;justify-content:space-between"><span>LOADING</span><span id="progress-text">0%</span></span>
+        <span style="display:flex;justify-content:space-between"><span>SYNC RATE</span><span id="progress-text">0%</span></span>
         <span class="bar"><span id="progress"></span></span>
       </div>
     </aside>

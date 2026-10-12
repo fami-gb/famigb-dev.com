@@ -11,9 +11,10 @@ export async function getStaticPaths() {
 
 const { work, n } = Astro.props;
 const { Content } = await render(work);
+const stat = `${work.body?.split('\n').length ?? 0}L, ${Buffer.byteLength(work.body ?? '')}B`;
 ---
 
-<Base title={work.data.title} description={work.data.description || undefined} file={`units/${work.id}.md`} active="units" back="/#units">
+<Base title={work.data.title} description={work.data.description || undefined} file={`units/${work.id}.md`} stat={stat} active="units" back="/#units">
   <div class="doc-head">
     <div class="label panel-head">UNITS // UNIT-{String(n + 1).padStart(2, '0')}</div>
     <div class="body">

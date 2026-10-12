@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="SIGNAL LOST" file="[No Name]" stat="[New]" back="/">
+  <section class="panel brk lost" aria-labelledby="lost-h">
+    <div class="panel-head" style="background:var(--alert);color:var(--on-alert)"><span>▲ ERROR</span><span>404</span></div>
+    <div class="body">
+      <p class="mono e">E484: ファイルを開けません: <span id="path"></span></p>
+      <h1 id="lost-h">SIGNAL LOST</h1>
+      <p>該当データは存在しないか、削除されました。</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:13px;letter-spacing:0.12em">
+        <a href="/" class="tab">HOME へ戻る</a>
+        <a href="/blog/" class="tab">ARCHIVE</a>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="hints">
+    <span><kbd>h</kbd>HOME へ戻る</span>
+    <span><kbd>/</kbd>検索</span>
+  </Fragment>
+</Base>
+
+<script>
+  document.getElementById('path')!.textContent = location.pathname;
+</script>
+
+<style>
+  .lost { max-width: 720px; width: 100%; margin: 24px auto; }
+  .body { padding: 28px 24px; display: flex; flex-direction: column; gap: 18px; }
+  .body p { margin: 0; line-height: 1.9; }
+  .e { font-size: 13px; color: var(--alert); overflow-wrap: anywhere; }
+  h1 { margin: 0; font-size: clamp(40px, 8vw, 72px); font-weight: 300; letter-spacing: 0.16em; line-height: 1.1; }
+</style>
