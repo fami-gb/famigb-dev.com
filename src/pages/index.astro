@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import LogList from '../components/LogList.astro';
+import { getPosts, getWorks, fmt } from '../utils';
+
+const posts = await getPosts();
+const works = await getWorks();
+
+const unitData = [
+  ['読み', 'ふぁみじび'],
+  ['CLASS', 'Backend Engineer / Univ. Student'],
+  ['装備', 'Vim(VSCode)'],
+  ['好物', 'ファミチキ'],
+  ['記録', 'ゼノブレイドシリーズ / NieR:Automata'],
+];
+---
+
+<Base file="~/index.md" active="home">
+  <section id="profile" aria-labelledby="profile-h" class="profile">
+    <div class="portrait brk">
+      <span class="tag">IMG // 0825</span>
+      <img src="/takopi-github.jpg" alt="fami-gb のアイコン" width="460" height="460" />
+    </div>
+
+    <div class="unit">
+      <div class="mono" style="font-size:12px;letter-spacing:0.24em">UNIT DATA</div>
+      <h1 id="profile-h">fami-gb</h1>
+      <dl>
+        {unitData.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+      </dl>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:13px">
+        <a href="https://github.com/fami-gb" class="tab" rel="me">GitHub</a>
+        <a href="https://x.com/fami_gb1618" class="tab" rel="me">X</a>
+      </div>
+    </div>
+
+    <div class="panel syslog">
+      <div class="panel-head"><span>SYSTEM LOG</span></div>
+      <div class="lines">
+        <span>&gt; 起動シーケンス完了</span>
+        <span>&gt; ARCHIVE: 記録 {posts.length} 件をロード</span>
+        <span>&gt; UNITS: {works.length ? `${works.length} 件をロード` : '0 件 ── 開発中'}</span>
+        <span style="color:var(--alert)">&gt; 警告: ファミチキ残量 不明</span>
+      </div>
+      <p>大学生のバックエンドエンジニア。インターンと個人開発をしながら、Vim で側だけすごそうなエンジニアをやっています。</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="archive-h" class="section">
+    <div class="section-head">
+      <h2 id="archive-h">ARCHIVE</h2>
+      <span class="jp">記録データ</span>
+      <span class="rule"></span>
+      <a href="/blog/">ALL LOGS ▸</a>
+    </div>
+    <LogList posts={posts.slice(0, 5)} />
+  </section>
+
+  <section id="units" aria-labelledby="units-h" class="section">
+    <div class="section-head">
+      <h2 id="units-h">UNITS</h2>
+      <span class="jp">制作物</span>
+      <span class="rule"></span>
+    </div>
+    <div class="units">
+      {
+        works.map((w, n) => (
+          <a href={`/works/${w.id}/`} class="unit-card panel brk" data-nav>
+            <div class="panel-head">
+              <span>UNIT-{String(n + 1).padStart(2, '0')}</span>
+              <span>{w.data.date.getFullYear()}</span>
+            </div>
+            {w.data.image ? <img src={w.data.image} alt="" loading="lazy" /> : <div class="shot hatch">NO IMAGE</div>}
+            <div class="body">
+              <span class="name">{w.data.title}</span>
+              <span>{w.data.description}</span>
+              <span class="chips">{w.data.stack.map((s) => <span class="chip">{s}</span>)}</span>
+            </div>
+          </a>
+        ))
+      }
+      <div class="unit-card empty">
+        <span>NO SIGNAL</span>
+        <span style="font-family:var(--sans);letter-spacing:0.1em">{works.length ? '次のユニットを開発中' : 'データ未登録'}</span>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .profile { display: flex; flex-wrap: wrap; gap: 40px; align-items: stretch; }
+  .portrait { flex: 1 1 240px; max-width: 320px; border: 1px solid var(--ink); align-self: flex-start; }
+  .portrait img { display: block; width: 100%; height: auto; filter: sepia(0.45) saturate(0.7); }
+  .tag { position: absolute; z-index: 1; top: 0; left: 0; background: var(--ink); color: var(--ground); font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; padding: 4px 10px; }
+  .unit { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .unit h1 { margin: 0; font-size: clamp(52px, 9vw, 104px); font-weight: 300; letter-spacing: 0.08em; line-height: 1; }
+  dl { margin: 0; display: grid; grid-template-columns: 112px minmax(0, 1fr); border-top: 1px solid var(--ink); }
+  dt, dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--shadow); }
+  dt { font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; }
+  dt:nth-last-of-type(1), dd:last-of-type { border-bottom-color: var(--ink); }
+  .syslog { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; }
+  .syslog .lines { padding: 14px; display: flex; flex-direction: column; gap: 10px; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  .syslog p { margin: auto 0 0; border-top: 1px dashed var(--ink); padding: 14px; font-size: 14px; line-height: 1.9; }
+  .units { display: flex; flex-wrap: wrap; gap: 24px; }
+  .unit-card { flex: 1 1 300px; min-width: 0; max-width: 540px; text-decoration: none; display: flex; flex-direction: column; }
+  .unit-card:hover, .unit-card.is-sel { box-shadow: 5px 5px 0 var(--shadow); }
+  .unit-card.is-sel .panel-head { background: var(--alert); }
+  .unit-card img, .unit-card .shot { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; border-bottom: 1px solid var(--ink); }
+  .unit-card .shot { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; }
+  .unit-card .body { padding: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.8; }
+  .unit-card .name { font-size: 18px; font-weight: 500; }
+  .unit-card.empty { min-height: 240px; border: 1px dashed var(--ink); align-items: center; justify-content: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; }
+</style>

@@ -1,0 +1,58 @@
+import katex from 'katex';
+
+const raw = (value) => ({ type: 'raw', value });
+const tex = (src, displayMode) => raw(katex.renderToString(src, { displayMode, throwOnError: false }));
+const cls = (node) => node?.properties?.className ?? [];
+
+// satteri の math 機能が出力する code.math-inline / pre > code.math-display を KaTeX の HTML に置き換える
+export const katexPlugin = {
+  name: 'katex',
+  element: {
+    filter: ['pre', 'code'],
+    visit(node, ctx) {
+      if (node.tagName === 'pre') {
+        const code = node.children?.find((c) => c.tagName === 'code');
+        if (cls(code).includes('math-display')) return tex(ctx.textContent(code), true);
+        return;
+      }
+      if (cls(node).includes('math-inline')) return tex(ctx.textContent(node), false);
+    },
+  },
+};
+
+const el = (tagName, properties, children = []) => ({ type: 'element', tagName, properties, children });
+const text = (value) => ({ type: 'text', value });
+
+// ```json title="settings.json" → ファイル名・言語・yank ボタン付きの <figure> で包む
+export const codeFrame = {
+  name: 'code-frame',
+  root(root) {
+    const meta = this.options.meta;
+    const title = (typeof meta === 'string' ? meta : meta?.__raw)?.match(/title="([^"]+)"/)?.[1] ?? '';
+    root.children = [
+      el('figure', { class: 'code' }, [
+        el('figcaption', {}, [
+          el('span', { class: 'code-title' }, [text(title)]),
+          el('span', { class: 'code-lang' }, [text(this.options.lang)]),
+          el('button', { type: 'button', 'data-yank': '' }, [text('yank')]),
+        ]),
+        ...root.children,
+      ]),
+    ];
+  },
+};
+
+export const nierTheme = {
+  name: 'nier',
+  type: 'dark',
+  colors: { 'editor.background': '#34322B', 'editor.foreground': '#E6E0CB' },
+  tokenColors: [
+    { scope: ['comment'], settings: { foreground: '#A59F88', fontStyle: 'italic' } },
+    { scope: ['string'], settings: { foreground: '#B9C99A' } },
+    { scope: ['support.type.property-name', 'entity.name.tag', 'entity.other.attribute-name'], settings: { foreground: '#E8C98E' } },
+    { scope: ['keyword', 'storage', 'keyword.operator.new'], settings: { foreground: '#E3A784' } },
+    { scope: ['constant', 'support.constant'], settings: { foreground: '#D9B8E0' } },
+    { scope: ['entity.name.function', 'support.function'], settings: { foreground: '#A8CFD0' } },
+    { scope: ['entity.name.type', 'support.type', 'support.class'], settings: { foreground: '#E8C98E' } },
+  ],
+};
