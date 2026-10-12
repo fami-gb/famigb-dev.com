@@ -1,0 +1,58 @@
+---
+import 'katex/dist/katex.min.css';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getPosts, fmt } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  // posts は新しい順なので、PREV(古い)= n+1、NEXT(新しい)= n-1
+  return posts.map((post, n) => ({ params: { slug: post.id }, props: { post, n, prev: posts[n + 1], next: posts[n - 1] } }));
+}
+
+const { post, n, prev, next } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const logNo = String((await getPosts()).length - n).padStart(4, '0');
+---
+
+<Base title={post.data.title} description={post.data.description || undefined} file={`archive/${post.id}.md`} active="archive" back="/blog/" type="article">
+  <div class="doc-head">
+    <div class="label panel-head">ARCHIVE // LOG-{logNo}</div>
+    <div class="body">
+      <h1>{post.data.title}</h1>
+      <div class="chips" style="align-items:center">
+        <span class="mono" style="font-size:12px;letter-spacing:0.1em;margin-right:6px">RECORDED <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time></span>
+        {post.data.tags.map((t) => <span class="chip">{t}</span>)}
+      </div>
+    </div>
+  </div>
+
+  <div class="doc">
+    <article>
+      <div class="prose"><Content /></div>
+      <nav aria-label="前後の記事" class="pager">
+        {prev ? <a href={`/blog/${prev.id}/`}><span>◂ PREV LOG</span><span>{prev.data.title}</span></a> : <span style="flex:1 1 240px"></span>}
+        {next && <a href={`/blog/${next.id}/`} class="next"><span>NEXT LOG ▸</span><span>{next.data.title}</span></a>}
+      </nav>
+    </article>
+
+    <aside class="panel brk" aria-label="目次">
+      <div class="panel-head">INDEX</div>
+      <div class="toc">
+        {toc.map((h) => <a href={`#${h.slug}`} class="item" data-toc>{h.text}</a>)}
+      </div>
+      <div class="progress">
+        <span style="display:flex;justify-content:space-between"><span>LOADING</span><span id="progress-text">0%</span></span>
+        <span class="bar"><span id="progress"></span></span>
+      </div>
+    </aside>
+  </div>
+
+  <Fragment slot="hints">
+    <span><kbd>j</kbd><kbd>k</kbd>スクロール</span>
+    <span><kbd>g</kbd><kbd>G</kbd>先頭/末尾</span>
+    <span><kbd>h</kbd>一覧へ戻る</span>
+    <span><kbd>/</kbd>検索</span>
+  </Fragment>
+</Base>

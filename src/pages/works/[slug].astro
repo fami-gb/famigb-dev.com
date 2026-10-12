@@ -1,0 +1,39 @@
+---
+import 'katex/dist/katex.min.css';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getWorks } from '../../utils';
+
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return works.map((work, n) => ({ params: { slug: work.id }, props: { work, n } }));
+}
+
+const { work, n } = Astro.props;
+const { Content } = await render(work);
+---
+
+<Base title={work.data.title} description={work.data.description || undefined} file={`units/${work.id}.md`} active="units" back="/#units">
+  <div class="doc-head">
+    <div class="label panel-head">UNITS // UNIT-{String(n + 1).padStart(2, '0')}</div>
+    <div class="body">
+      <h1>{work.data.title}</h1>
+      <p style="margin:0;line-height:1.9">{work.data.description}</p>
+      <div class="chips">{work.data.stack.map((s) => <span class="chip">{s}</span>)}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:13px">
+        {work.data.github && <a href={work.data.github} class="tab">GitHub</a>}
+        {work.data.demo && <a href={work.data.demo} class="tab">DEMO</a>}
+      </div>
+    </div>
+  </div>
+
+  {work.data.image && <img src={work.data.image} alt="" class="brk" style="width:100%;height:auto;border:1px solid var(--ink)" />}
+
+  <article class="prose" style="max-width:760px"><Content /></article>
+
+  <Fragment slot="hints">
+    <span><kbd>j</kbd><kbd>k</kbd>スクロール</span>
+    <span><kbd>h</kbd>一覧へ戻る</span>
+    <span><kbd>/</kbd>検索</span>
+  </Fragment>
+</Base>

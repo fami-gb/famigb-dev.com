@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import LogList from '../../components/LogList.astro';
+import { getPosts } from '../../utils';
+
+const posts = await getPosts();
+---
+
+<Base title="ARCHIVE" file="archive/" active="archive" back="/">
+  <section class="section" aria-labelledby="archive-h">
+    <div class="section-head">
+      <h1 id="archive-h">ARCHIVE</h1>
+      <span class="jp">記録データ ── {posts.length} 件</span>
+      <span class="rule"></span>
+    </div>
+    <LogList posts={posts} />
+  </section>
+</Base>

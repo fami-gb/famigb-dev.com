@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { fmt } from '../utils';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+---
+
+<ul class="list">
+  {
+    posts.map((p) => (
+      <li>
+        <a href={`/blog/${p.id}/`} class="item" data-nav data-desc={p.data.description}>
+          <span class="title">{p.data.title}</span>
+          <span class="meta">{fmt(p.data.date)}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+<div class="panel brk" style="margin-top:8px;padding:18px 20px;display:flex;flex-direction:column;gap:10px">
+  <div class="mono" style="font-size:12px;letter-spacing:0.14em">DESCRIPTION</div>
+  <p id="desc" aria-live="polite" style="margin:0;font-size:15px;line-height:1.9">{posts[0]?.data.description || '記録なし'}</p>
+</div>
