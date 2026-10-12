@@ -1,0 +1,94 @@
+---
+// 初回表示時(セッションごと)の起動画面。JS 無効・視差効果を減らす設定では出さない
+const lines: [string, string][] = [
+  ['OK', '記録端末 起動'],
+  ['OK', 'ARCHIVE 記録データ ロード'],
+  ['OK', 'UNITS 制作ユニット ロード'],
+  ['WARN', 'ファミチキ残量 不明'],
+  ['OK', '全システム 正常'],
+];
+---
+
+<div id="boot" aria-hidden="true">
+  <div class="noise"></div>
+  <div class="glitch"></div>
+  <div class="log">
+    <p class="head">SYSTEM BOOT ── famigb-dev.com</p>
+    {lines.map(([s, t], i) => <p style={`animation-delay:${0.25 + i * 0.22}s`}><span class={s}>[{s === 'OK' ? '  OK  ' : ' WARN '}]</span> {t}</p>)}
+    <div class="bar"><span></span></div>
+  </div>
+</div>
+<script is:inline>
+  (() => {
+    const boot = document.getElementById('boot');
+    let seen = true;
+    try {
+      seen = sessionStorage.getItem('booted') === '1';
+      sessionStorage.setItem('booted', '1');
+    } catch {}
+    if (seen || matchMedia('(prefers-reduced-motion: reduce)').matches) return boot.remove();
+    boot.classList.add('on');
+    const end = () => boot.remove();
+    setTimeout(end, 2600);
+    boot.addEventListener('click', end);
+    addEventListener('keydown', end, { once: true });
+  })();
+</script>
+
+<style>
+  #boot { display: none; }
+  #boot.on {
+    display: flex; align-items: center; justify-content: center;
+    position: fixed; inset: 0; z-index: 100; overflow: hidden;
+    background: #2b2923; color: #d2cdb5; font-family: var(--mono);
+    animation: boot-out 0.45s 2.15s steps(6) forwards;
+  }
+  /* 砂嵐: feTurbulence のノイズを大きめに敷いて位置をカクカク動かす */
+  .noise {
+    position: absolute; inset: -50%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.82 0 0 0 0 0.8 0 0 0 0 0.71 0 0 0 1.4 -0.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.35;
+    animation: noise 0.24s steps(4) infinite, noise-fade 2.2s ease-in forwards;
+  }
+  /* 走査線と、上から下へ流れる明るい帯 */
+  #boot.on::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.25) 0 1px, transparent 1px 3px);
+  }
+  #boot.on::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 18vh; pointer-events: none;
+    background: linear-gradient(transparent, rgb(210 205 181 / 0.08), transparent);
+    animation: sweep 1.6s linear infinite;
+  }
+  .glitch {
+    position: absolute; left: 0; right: 0; height: 6px; background: rgb(210 205 181 / 0.5);
+    animation: glitch 0.9s steps(1) infinite;
+  }
+  .log { position: relative; width: min(560px, calc(100% - 32px)); font-size: 14px; letter-spacing: 0.06em; line-height: 2; animation: flicker 2.2s steps(1); }
+  .log p { margin: 0; white-space: pre; opacity: 0; animation: line-in 0.01s forwards; }
+  .log .head { opacity: 1; animation: none; letter-spacing: 0.2em; border-bottom: 1px solid #6b665a; margin-bottom: 10px; }
+  .log .WARN { color: #e3a784; }
+  .bar { margin-top: 14px; height: 10px; border: 1px solid #d2cdb5; padding: 1px; }
+  .bar span { display: block; height: 100%; width: 0; background: #d2cdb5; animation: fill 1.6s 0.25s steps(16) forwards; }
+
+  @keyframes noise {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-7%, 4%); }
+    50% { transform: translate(5%, -6%); }
+    75% { transform: translate(-3%, -9%); }
+  }
+  @keyframes noise-fade { 0% { opacity: 0.6; } 100% { opacity: 0.18; } }
+  @keyframes sweep { from { top: -18vh; } to { top: 100vh; } }
+  @keyframes glitch {
+    0% { top: 22%; height: 4px; } 20% { top: 61%; height: 10px; } 40% { top: 9%; height: 2px; }
+    60% { top: 83%; height: 7px; } 80% { top: 47%; height: 3px; opacity: 0; }
+  }
+  @keyframes flicker { 0%, 6%, 9%, 92%, 95% { opacity: 1; } 5%, 8%, 94% { opacity: 0.3; } }
+  @keyframes line-in { to { opacity: 1; } }
+  @keyframes fill { to { width: 100%; } }
+  @keyframes boot-out {
+    0% { opacity: 1; clip-path: inset(0); }
+    50% { opacity: 1; clip-path: inset(45% 0 45% 0); }
+    100% { opacity: 0; clip-path: inset(50% 0 50% 0); visibility: hidden; }
+  }
+</style>

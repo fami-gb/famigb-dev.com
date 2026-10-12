@@ -13,7 +13,7 @@ export function initKeys() {
     const el = items[cur];
     el.classList.add('is-sel');
     if (scroll) el.scrollIntoView({ block: 'nearest' });
-    if (desc && el.dataset.desc !== undefined) desc.textContent = el.dataset.desc || '概要なし';
+    if (desc && el.dataset.desc !== undefined) desc.textContent = el.dataset.desc || 'NO DATA ── 概要未登録';
   };
   if (items.length) select(0, false);
   items.forEach((el, n) => el.addEventListener('mouseenter', () => select(n, false)));
@@ -133,9 +133,11 @@ export function initKeys() {
   document.addEventListener('click', async (e) => {
     const b = (e.target as Element).closest<HTMLButtonElement>('[data-yank]');
     if (!b) return;
-    await navigator.clipboard.writeText(b.closest('figure')!.querySelector('pre')!.innerText);
+    const code = b.closest('figure')!.querySelector('pre')!.innerText.replace(/\n$/, '');
+    await navigator.clipboard.writeText(code);
+    const n = code.split('\n').length;
     b.textContent = 'yanked';
-    echo('"+ yanked');
+    echo(n === 1 ? '1 line yanked' : `${n} lines yanked`);
     setTimeout(() => (b.textContent = 'yank'), 1200);
   });
 }

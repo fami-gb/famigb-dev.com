@@ -1,21 +1,36 @@
 ---
 import '../styles/global.css';
+import Boot from '../components/Boot.astro';
 
 interface Props {
   title?: string;
   description?: string;
   /** ステータスラインに出すファイル名 */
   file: string;
+  /** コマンド行に出す Vim 風のファイル情報(例: 93L, 4321B)。省略時は [RO] */
+  stat?: string;
   active?: 'home' | 'archive' | 'units' | 'profile';
   /** h キーの戻り先 */
   back?: string;
   type?: 'website' | 'article';
+  /** OGP 画像のパス */
+  image?: string;
 }
 
-const { title, description = 'fami-gb のブログと制作物', file, active, back, type = 'website' } = Astro.props;
-const siteName = "fami-gb's portfolio";
-const fullTitle = title ? `${title} | ${siteName}` : siteName;
+const {
+  title,
+  description = 'バックエンドエンジニア fami-gb の記録データと制作ユニット。',
+  file,
+  stat = '[RO]',
+  active,
+  back,
+  type = 'website',
+  image = '/og/index.png',
+} = Astro.props;
+const siteName = 'FAMI-GB';
+const fullTitle = title ? `${title} - ${siteName}` : `${siteName} // 記録端末`;
 const url = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
 
 const tabs = [
   { key: 'home', label: 'HOME', href: '/' },
@@ -32,15 +47,18 @@ const tabs = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={url} />
-    <meta property="og:title" content={title ?? siteName} />
+    <meta property="og:title" content={title ?? fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={url} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="ja_JP" />
     <meta property="og:type" content={type} />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:creator" content="@fami_gb1618" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -50,10 +68,11 @@ const tabs = [
     />
   </head>
   <body data-back={back}>
+    <Boot />
     <header class="site-header">
       <div class="top">
         <a href="/" class="logo">FAMI-GB</a>
-        <span class="sys">SYSTEM // fami-gb.dev ── ONLINE</span>
+        <span class="sys">SYSTEM // famigb-dev.com ── ONLINE</span>
       </div>
       <div class="double-rule"></div>
       <nav aria-label="メイン" class="tabs">
@@ -81,7 +100,7 @@ const tabs = [
         <span>utf-8</span>
         <span class="sep" id="pct">Top</span>
       </div>
-      <div class="cmdline"><span id="echo"></span><span class="cursor"></span></div>
+      <div class="cmdline"><span id="echo">"{file}" {stat}</span><span class="cursor"></span></div>
     </footer>
 
     <dialog id="search" aria-labelledby="search-h">
