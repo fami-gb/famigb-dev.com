@@ -20,8 +20,42 @@ export const katexPlugin = {
   },
 };
 
+// ```mermaid は Shiki を通さず <pre class="mermaid">図のソース</pre> にして、クライアント側で描画する
+export const mermaidPlugin = {
+  name: 'mermaid',
+  element: {
+    filter: ['pre'],
+    visit(node, ctx) {
+      const code = node.children?.find((c) => c.tagName === 'code');
+      if (!cls(code).includes('language-mermaid')) return;
+      return { type: 'element', tagName: 'pre', properties: { class: 'mermaid' }, children: [{ type: 'text', value: ctx.textContent(code) }] };
+    },
+  },
+};
+
 const el = (tagName, properties, children = []) => ({ type: 'element', tagName, properties, children });
 const text = (value) => ({ type: 'text', value });
+
+// 段落が GitHub リポジトリへのリンクだけを含むとき OGP カードに置き換える
+export const githubCard = {
+  name: 'github-card',
+  element: {
+    filter: ['p'],
+    visit(node) {
+      const [link, ...rest] = (node.children ?? []).filter((c) => c.type !== 'text' || c.value.trim());
+      if (rest.length || link?.tagName !== 'a') return;
+      const url = URL.parse(link.properties?.href);
+      if (url?.hostname !== 'github.com') return;
+      const path = url.pathname.replace(/\/+$/, '');
+      const [owner, repo] = path.split('/').filter(Boolean);
+      if (!repo) return;
+      return el('a', { class: 'gh-card', href: link.properties.href }, [
+        el('img', { src: `https://opengraph.githubassets.com/1${path}`, alt: `${owner}/${repo}`, width: 1200, height: 600, loading: 'lazy' }),
+        el('span', { class: 'gh-card-url' }, [text(`github.com${path}`)]),
+      ]);
+    },
+  },
+};
 
 // ```json title="settings.json" → ファイル名・言語・yank ボタン付きの <figure> で包む
 export const codeFrame = {
