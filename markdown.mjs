@@ -20,6 +20,19 @@ export const katexPlugin = {
   },
 };
 
+// ```mermaid は Shiki を通さず <pre class="mermaid">図のソース</pre> にして、クライアント側で描画する
+export const mermaidPlugin = {
+  name: 'mermaid',
+  element: {
+    filter: ['pre'],
+    visit(node, ctx) {
+      const code = node.children?.find((c) => c.tagName === 'code');
+      if (!cls(code).includes('language-mermaid')) return;
+      return { type: 'element', tagName: 'pre', properties: { class: 'mermaid' }, children: [{ type: 'text', value: ctx.textContent(code) }] };
+    },
+  },
+};
+
 const el = (tagName, properties, children = []) => ({ type: 'element', tagName, properties, children });
 const text = (value) => ({ type: 'text', value });
 

@@ -57,3 +57,25 @@ const logNo = String((await getPosts()).length - n).padStart(4, '0');
     <span><kbd>/</kbd>検索</span>
   </Fragment>
 </Base>
+
+<script>
+  // 図のある記事だけ mermaid を遅延読み込みして描画する
+  if (document.querySelector('pre.mermaid')) {
+    const { default: mermaid } = await import('mermaid');
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: {
+        background: '#d2cdb5',
+        primaryColor: '#dcd8c0',
+        primaryTextColor: '#4a4740',
+        primaryBorderColor: '#4a4740',
+        lineColor: '#4a4740',
+        secondaryColor: '#c9c3aa',
+        tertiaryColor: '#d2cdb5',
+        fontFamily: "'IBM Plex Mono', monospace",
+      },
+    });
+    await mermaid.run();
+  }
+</script>

@@ -150,6 +150,8 @@ mark { background: var(--alert); color: var(--on-alert); padding: 0 2px; }
 .prose th, .prose td { border: 1px solid var(--ink); padding: 8px 14px; text-align: left; }
 .prose th { background: var(--ink); color: var(--ground); font-weight: 500; }
 .prose hr { border: 0; height: 3px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.prose pre.mermaid { margin: 0; padding: 16px; overflow-x: auto; border: 1px solid var(--ink); background: var(--panel); color: var(--ink); font-family: var(--mono); font-size: 13px; text-align: center; }
+.prose pre.mermaid svg { max-width: none; }
 
 .code { margin: 0; border: 1px solid var(--ink); background: var(--code-bg); }
 .code figcaption { display: flex; align-items: stretch; font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; border-bottom: 1px solid var(--ink); line-height: 1.6; }
