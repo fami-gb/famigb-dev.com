@@ -42,33 +42,16 @@ export const githubCard = {
   element: {
     filter: ['p'],
     visit(node) {
-      let link = null;
-      for (const child of node.children ?? []) {
-        if (child.type === 'text') {
-          if (!/^\s*$/.test(child.value)) return;
-          continue;
-        }
-        if (child.type === 'element' && child.tagName === 'a' && child.children?.length > 0) {
-          if (link) return;
-          link = child;
-          continue;
-        }
-        return;
-      }
-      if (!link) return;
-      const href = link.properties?.href;
-      if (typeof href !== 'string') return;
-      let url;
-      try { url = new URL(href); } catch { return; }
-      if (url.hostname !== 'github.com') return;
-      const parts = url.pathname.split('/').filter(Boolean);
-      if (parts.length < 2) return;
-      const [owner, repo, ...rest] = parts;
-      const sub = rest.length ? `/${rest.join('/')}` : '';
-      const ogp = `https://opengraph.githubassets.com/1/${owner}/${repo}${sub}`;
-      return el('a', { class: 'gh-card', href }, [
-        el('img', { src: ogp, alt: `${owner}/${repo}`, width: 1200, height: 600, loading: 'lazy' }),
-        el('span', { class: 'gh-card-url' }, [text(`github.com/${owner}/${repo}${sub}`)]),
+      const [link, ...rest] = (node.children ?? []).filter((c) => c.type !== 'text' || c.value.trim());
+      if (rest.length || link?.tagName !== 'a') return;
+      const url = URL.parse(link.properties?.href);
+      if (url?.hostname !== 'github.com') return;
+      const path = url.pathname.replace(/\/+$/, '');
+      const [owner, repo] = path.split('/').filter(Boolean);
+      if (!repo) return;
+      return el('a', { class: 'gh-card', href: link.properties.href }, [
+        el('img', { src: `https://opengraph.githubassets.com/1${path}`, alt: `${owner}/${repo}`, width: 1200, height: 600, loading: 'lazy' }),
+        el('span', { class: 'gh-card-url' }, [text(`github.com${path}`)]),
       ]);
     },
   },

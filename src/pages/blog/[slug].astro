@@ -59,6 +59,12 @@ const logNo = String((await getPosts()).length - n).padStart(4, '0');
 </Base>
 
 <script>
+  // ponytail: GitHub の OGP 画像は 429 で読めないことがあるので、失敗したら画像を外して URL 行だけ残す。常に出したいならビルド時に取得して同梱する
+  for (const img of document.querySelectorAll<HTMLImageElement>('.gh-card img')) {
+    img.onerror = () => img.remove();
+    if (img.complete && !img.naturalWidth) img.remove();
+  }
+
   // 図のある記事だけ mermaid を遅延読み込みして描画する
   if (document.querySelector('pre.mermaid')) {
     const { default: mermaid } = await import('mermaid');
