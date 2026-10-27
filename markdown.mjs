@@ -23,6 +23,44 @@ export const katexPlugin = {
 const el = (tagName, properties, children = []) => ({ type: 'element', tagName, properties, children });
 const text = (value) => ({ type: 'text', value });
 
+// 段落が GitHub リポジトリへのリンクだけを含むとき OGP カードに置き換える
+export const githubCard = {
+  name: 'github-card',
+  element: {
+    filter: ['p'],
+    visit(node) {
+      let link = null;
+      for (const child of node.children ?? []) {
+        if (child.type === 'text') {
+          if (!/^\s*$/.test(child.value)) return;
+          continue;
+        }
+        if (child.type === 'element' && child.tagName === 'a' && child.children?.length > 0) {
+          if (link) return;
+          link = child;
+          continue;
+        }
+        return;
+      }
+      if (!link) return;
+      const href = link.properties?.href;
+      if (typeof href !== 'string') return;
+      let url;
+      try { url = new URL(href); } catch { return; }
+      if (url.hostname !== 'github.com') return;
+      const parts = url.pathname.split('/').filter(Boolean);
+      if (parts.length < 2) return;
+      const [owner, repo, ...rest] = parts;
+      const sub = rest.length ? `/${rest.join('/')}` : '';
+      const ogp = `https://opengraph.githubassets.com/1/${owner}/${repo}${sub}`;
+      return el('a', { class: 'gh-card', href }, [
+        el('img', { src: ogp, alt: `${owner}/${repo}`, width: 1200, height: 600, loading: 'lazy' }),
+        el('span', { class: 'gh-card-url' }, [text(`github.com/${owner}/${repo}${sub}`)]),
+      ]);
+    },
+  },
+};
+
 // ```json title="settings.json" → ファイル名・言語・yank ボタン付きの <figure> で包む
 export const codeFrame = {
   name: 'code-frame',
