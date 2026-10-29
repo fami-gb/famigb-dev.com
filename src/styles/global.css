@@ -144,9 +144,14 @@ mark { background: var(--alert); color: var(--on-alert); padding: 0 2px; }
 .prose a[href^='http']:not(.gh-card):not([href^='https://famigb-dev.com'])::after { content: '↗' / '(外部リンク)'; }
 .prose img, .prose video { max-width: 100%; height: auto; display: block; margin-inline: auto; border: 1px solid var(--ink); }
 .prose ul, .prose ol { padding-left: 1.5em; }
-.prose blockquote { border: 1px solid var(--ink); background: var(--panel); padding: 0; }
-.prose blockquote::before { content: '▲ NOTICE'; display: block; background: var(--alert); color: var(--on-alert); padding: 6px 14px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; line-height: 1.6; }
-.prose blockquote > * { margin: 0; padding: 14px 18px; font-size: 15px; line-height: 1.9; }
+.prose blockquote { border-left: 3px solid var(--ink); background: var(--panel); padding: 14px 18px; font-size: 15px; line-height: 1.9; }
+.prose blockquote > * { margin: 0; }
+.prose blockquote > * + * { margin-top: 10px; }
+.prose .alert { border: 1px solid var(--ink); background: var(--panel); }
+.prose .alert::before { content: '▲ ' attr(data-alert); display: block; background: var(--ink); color: var(--ground); padding: 6px 14px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; line-height: 1.6; }
+.prose .alert:is([data-alert='IMPORTANT'], [data-alert='WARNING'], [data-alert='CAUTION'])::before { background: var(--alert); color: var(--on-alert); }
+.prose .alert > * { margin: 0; padding: 14px 18px; font-size: 15px; line-height: 1.9; }
+.prose .alert > * + * { padding-top: 0; }
 .prose table { border-collapse: collapse; display: block; overflow-x: auto; }
 .prose th, .prose td { border: 1px solid var(--ink); padding: 8px 14px; text-align: left; }
 .prose th { background: var(--ink); color: var(--ground); font-weight: 500; }
