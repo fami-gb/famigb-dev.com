@@ -57,6 +57,22 @@ export const githubCard = {
   },
 };
 
+// > [!NOTE] などで始まる引用を GitHub 風の注記 <aside class="alert" data-alert="NOTE"> にする
+export const alertPlugin = {
+  name: 'alert',
+  element: {
+    filter: ['blockquote'],
+    visit(node) {
+      const [p, ...rest] = (node.children ?? []).filter((c) => c.type === 'element');
+      const [first, ...inline] = p?.tagName === 'p' ? p.children : [];
+      const m = first?.type === 'text' && first.value.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i);
+      if (!m) return;
+      const body = [text(first.value.slice(m[0].length)), ...inline].filter((c) => c.type !== 'text' || c.value);
+      return el('aside', { class: 'alert', 'data-alert': m[1].toUpperCase() }, [...(body.length ? [el('p', {}, body)] : []), ...rest]);
+    },
+  },
+};
+
 // ```json title="settings.json" → ファイル名・言語・yank ボタン付きの <figure> で包む
 export const codeFrame = {
   name: 'code-frame',
