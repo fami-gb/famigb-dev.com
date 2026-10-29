@@ -1,7 +1,7 @@
 ---
 title: CSの基礎すらままならないけど、SAMLを理解してみる#1
 date: "2026-10-29"
-description: SAMLにおける署名を学ぶ。
+description: 署名の基礎を学ぶ。
 tags: [hash, rsa, sign]
 ---
 
