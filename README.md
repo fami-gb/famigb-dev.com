@@ -1,4 +1,4 @@
-# famigb-dev.com
+# 2424013.xyz
 
 Astro 製のブログ + ポートフォリオ。
 

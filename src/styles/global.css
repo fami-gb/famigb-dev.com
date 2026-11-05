@@ -141,7 +141,7 @@ mark { background: var(--alert); color: var(--on-alert); padding: 0 2px; }
 .prose h3 { margin-top: 8px; display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 500; }
 .prose h3::before { content: ''; flex-shrink: 0; width: 8px; height: 8px; border: 1px solid var(--ink); }
 .prose :not(pre) > code { font-family: var(--mono); font-size: 0.9em; background: var(--tab); padding: 1px 6px; }
-.prose a[href^='http']:not(.gh-card):not([href^='https://famigb-dev.com'])::after { content: '↗' / '(外部リンク)'; }
+.prose a[href^='http']:not(.gh-card):not([href^='https://2424013.xyz'])::after { content: '↗' / '(外部リンク)'; }
 .prose img, .prose video { max-width: 100%; height: auto; display: block; margin-inline: auto; border: 1px solid var(--ink); }
 .prose ul, .prose ol { padding-left: 1.5em; }
 .prose blockquote { border-left: 3px solid var(--ink); background: var(--panel); padding: 14px 18px; font-size: 15px; line-height: 1.9; }
