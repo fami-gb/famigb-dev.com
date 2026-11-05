@@ -3,7 +3,7 @@ import { satteri } from '@astrojs/markdown-satteri';
 import { katexPlugin, mermaidPlugin, githubCard, alertPlugin, codeFrame, nierTheme } from './markdown.mjs';
 
 export default defineConfig({
-  site: 'https://famigb-dev.com',
+  site: 'https://2424013.xyz',
   markdown: {
     syntaxHighlight: { type: 'shiki', excludeLangs: ['mermaid'] },
     shikiConfig: { theme: nierTheme, transformers: [codeFrame] },

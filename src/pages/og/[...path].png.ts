@@ -41,7 +41,7 @@ function card({ label, title, titleSize, titleWeight, meta, file }: Card): Node 
       h(
         { justifyContent: 'space-between', alignItems: 'flex-end' },
         h({ fontSize: 44, fontWeight: 300, letterSpacing: 13, lineHeight: 1 }, 'FAMI-GB'),
-        h(mono(16), 'SYSTEM // famigb-dev.com ── ONLINE'),
+        h(mono(16), 'SYSTEM // 2424013.xyz ── ONLINE'),
       ),
       h({ height: 6, borderTop: `2px solid ${C.ink}`, borderBottom: `2px solid ${C.ink}`, marginTop: 18 }),
       h({ marginTop: 44, alignSelf: 'flex-start', background: C.ink, color: C.ground, padding: '8px 18px', ...mono(20) }, label),
@@ -91,7 +91,7 @@ export async function getStaticPaths() {
 
 export async function GET({ props }: { props: Card }) {
   const node = card(props);
-  const text = JSON.stringify(props) + 'FAMI-GBSYSTEM//famigb-dev.com──ONLINENORMALTop';
+  const text = JSON.stringify(props) + 'FAMI-GBSYSTEM//2424013.xyz──ONLINENORMALTop';
   const svg = await satori(node as never, { width: 1200, height: 630, fonts: await loadFonts(text) });
   const png = new Resvg(svg).render().asPng();
   return new Response(png, { headers: { 'Content-Type': 'image/png' } });
