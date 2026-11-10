@@ -179,11 +179,24 @@ mark { background: var(--alert); color: var(--on-alert); padding: 0 2px; }
 }
 
 /* ── link card ── */
-/* 左に OGP 画像、右にタイトル・説明・URL。画像がない/読めず消えたときは文章だけで全幅になる */
-.prose .link-card { display: flex; align-items: stretch; max-width: 100%; border: 1px solid var(--ink); background: var(--panel); text-decoration: none; }
-.prose .link-card img { flex: 0 0 clamp(120px, 35%, 240px); width: clamp(120px, 35%, 240px); height: auto; aspect-ratio: 1.91 / 1; object-fit: cover; display: block; border: 0; border-right: 1px solid var(--ink); }
-.prose .link-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 8px 14px; }
-.prose .link-card-title, .prose .link-card-desc { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
-.prose .link-card-title { -webkit-line-clamp: 2; font-weight: 700; color: var(--ink-deep); line-height: 1.4; }
-.prose .link-card-desc { -webkit-line-clamp: 2; font-size: 13px; color: var(--ink); line-height: 1.6; }
-.prose .link-card-url { font-family: var(--mono); font-size: 12px; color: var(--ink); line-height: 1.6; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* 左に OGP 画像、右にタイトルとドメイン。画像がない/読めず消えたときは縞模様の枠にドメイン名を出す */
+.prose .link-card { display: flex; height: 120px; border: 1px solid var(--ink); background: var(--panel); text-decoration: none; box-shadow: 4px 4px 0 var(--shadow); }
+.prose .link-card:hover { background: var(--tab-hover); }
+.prose .link-card-thumb {
+  position: relative; flex: 0 0 auto; aspect-ratio: 1.91 / 1; height: 100%;
+  display: grid; place-items: center; padding: 8px; overflow: hidden;
+  border-right: 1px solid var(--ink);
+  background: repeating-linear-gradient(135deg, var(--tab) 0 6px, var(--ground) 6px 12px);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--ink); overflow-wrap: anywhere; text-align: center;
+}
+.prose .link-card-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; margin: 0; }
+.prose .link-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 12px 20px; }
+.prose .link-card-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; font-weight: 700; color: var(--ink-deep); line-height: 1.5; }
+.prose .link-card-host { display: flex; align-items: center; gap: 8px; min-width: 0; font-family: var(--mono); font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; }
+.prose .link-card-host img { flex: none; width: 16px; height: 16px; margin: 0; border: 0; }
+@media (max-width: 640px) {
+  .prose .link-card { height: 88px; }
+  .prose .link-card-thumb { max-width: 40%; font-size: 9px; }
+  .prose .link-card-body { gap: 6px; padding: 8px 12px; }
+  .prose .link-card-title { font-size: 14px; }
+}

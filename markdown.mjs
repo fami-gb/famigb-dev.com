@@ -42,17 +42,19 @@ const decode = (s) =>
       : { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }[e.toLowerCase()]);
 
 // <meta property="og:title" content="..."> などを拾う。属性の順序は問わない
+const attr = (tag, name) => tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i'))?.slice(1).find((v) => v != null);
 const parseOgp = (html) => {
   const meta = {};
   for (const [tag] of html.matchAll(/<meta\s[^>]*>/gi)) {
-    const key = tag.match(/(?:property|name)\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase();
-    const content = tag.match(/content\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
-    if (key && content && !(key in meta)) meta[key] = decode(content[1] ?? content[2]);
+    const key = (attr(tag, 'property') ?? attr(tag, 'name'))?.toLowerCase();
+    const content = attr(tag, 'content');
+    if (key && content != null && !(key in meta)) meta[key] = decode(content);
   }
+  const icon = [...html.matchAll(/<link\s[^>]*>/gi)].map(([tag]) => tag).find((tag) => /^(shortcut )?icon$/i.test(attr(tag, 'rel') ?? ''));
   return {
     title: meta['og:title'] ?? meta['twitter:title'] ?? decode(html.match(/<title[^>]*>([^<]*)/i)?.[1] ?? '').trim(),
-    description: meta['og:description'] ?? meta['twitter:description'] ?? meta.description ?? '',
     image: meta['og:image'] ?? meta['twitter:image'],
+    icon: icon ? decode(attr(icon, 'href') ?? '') : '/favicon.ico',
   };
 };
 
@@ -66,7 +68,7 @@ const fetchOgp = (href) => {
         const res = await fetch(href, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; link-card)' }, signal: AbortSignal.timeout(10_000) });
         if (!res.ok) return {};
         const ogp = parseOgp(await res.text());
-        if (ogp.image) ogp.image = new URL(ogp.image, res.url).href;
+        for (const k of ['image', 'icon']) if (ogp[k]) ogp[k] = new URL(ogp[k], res.url).href;
         return ogp;
       } catch {
         return {};
@@ -76,7 +78,8 @@ const fetchOgp = (href) => {
   return ogpCache.get(href);
 };
 
-// 段落がリンクひとつだけのとき、リンク先の OGP を左に画像・右に文章のカードにする。取得できなければ URL だけのカード
+// 段落がリンクひとつだけのとき、リンク先の OGP を左に画像・右にタイトルとドメインのカードにする
+// 画像がない/読めないときも左の枠は残し、ドメイン名のプレースホルダを見せる
 export const linkCard = {
   name: 'link-card',
   element: {
@@ -87,14 +90,18 @@ export const linkCard = {
       const href = link.properties?.href;
       const url = URL.parse(href);
       if (!url?.protocol.startsWith('http')) return;
-      const { title, description, image } = await fetchOgp(href);
-      const display = url.host + url.pathname.replace(/\/+$/, '');
+      const { title, image, icon } = await fetchOgp(href);
       return el('a', { class: 'link-card', href }, [
-        ...(image ? [el('img', { src: image, alt: '', loading: 'lazy' })] : []),
+        el('span', { class: 'link-card-thumb', 'aria-hidden': 'true' }, [
+          text(url.host),
+          ...(image ? [el('img', { src: image, alt: '', loading: 'lazy' })] : []),
+        ]),
         el('span', { class: 'link-card-body' }, [
-          el('span', { class: 'link-card-title' }, [text(title || display)]),
-          ...(description ? [el('span', { class: 'link-card-desc' }, [text(description)])] : []),
-          ...(title ? [el('span', { class: 'link-card-url' }, [text(display)])] : []),
+          el('span', { class: 'link-card-title' }, [text(title || url.host + url.pathname.replace(/\/+$/, ''))]),
+          el('span', { class: 'link-card-host' }, [
+            ...(icon ? [el('img', { src: icon, alt: '', width: 16, height: 16, loading: 'lazy' })] : []),
+            text(url.host),
+          ]),
         ]),
       ]);
     },

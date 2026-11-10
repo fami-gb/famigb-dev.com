@@ -59,7 +59,7 @@ const logNo = String((await getPosts()).length - n).padStart(4, '0');
 </Base>
 
 <script>
-  // ponytail: OGP 画像はリンク先から直接読むので、429 やリンク切れで読めないことがある。失敗したら画像を外して文章だけ残す。常に出したいならビルド時に取得して同梱する
+  // ponytail: OGP 画像はリンク先から直接読むので、429 やリンク切れで読めないことがある。失敗したら画像を外し、下の縞模様のプレースホルダを見せる。常に出したいならビルド時に取得して同梱する
   for (const img of document.querySelectorAll<HTMLImageElement>('.link-card img')) {
     img.onerror = () => img.remove();
     if (img.complete && !img.naturalWidth) img.remove();
