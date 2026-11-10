@@ -141,7 +141,7 @@ mark { background: var(--alert); color: var(--on-alert); padding: 0 2px; }
 .prose h3 { margin-top: 8px; display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 500; }
 .prose h3::before { content: ''; flex-shrink: 0; width: 8px; height: 8px; border: 1px solid var(--ink); }
 .prose :not(pre) > code { font-family: var(--mono); font-size: 0.9em; background: var(--tab); padding: 1px 6px; }
-.prose a[href^='http']:not(.gh-card):not([href^='https://2424013.xyz'])::after { content: '↗' / '(外部リンク)'; }
+.prose a[href^='http']:not(.link-card):not([href^='https://2424013.xyz'])::after { content: '↗' / '(外部リンク)'; }
 .prose img, .prose video { max-width: 100%; height: auto; display: block; margin-inline: auto; border: 1px solid var(--ink); }
 .prose ul, .prose ol { padding-left: 1.5em; }
 .prose blockquote { border-left: 3px solid var(--ink); background: var(--panel); padding: 14px 18px; font-size: 15px; line-height: 1.9; }
@@ -178,7 +178,25 @@ mark { background: var(--alert); color: var(--on-alert); padding: 0 2px; }
   .logo { font-size: 30px; }
 }
 
-/* ── github card ── */
-.prose .gh-card { display: block; max-width: 100%; border: 1px solid var(--ink); background: var(--panel); text-decoration: none; }
-.prose .gh-card img { width: 100%; height: auto; display: block; border: 0; }
-.prose .gh-card-url { display: block; padding: 8px 14px; font-family: var(--mono); font-size: 12px; color: var(--ink); line-height: 1.6; overflow-wrap: anywhere; }
+/* ── link card ── */
+/* 左に OGP 画像、右にタイトルとドメイン。画像がない/読めず消えたときは縞模様の枠にドメイン名を出す */
+.prose .link-card { display: flex; height: 120px; border: 1px solid var(--ink); background: var(--panel); text-decoration: none; box-shadow: 4px 4px 0 var(--shadow); }
+.prose .link-card:hover { background: var(--tab-hover); }
+.prose .link-card-thumb {
+  position: relative; flex: 0 0 auto; aspect-ratio: 1.91 / 1; height: 100%;
+  display: grid; place-items: center; padding: 8px; overflow: hidden;
+  border-right: 1px solid var(--ink);
+  background: repeating-linear-gradient(135deg, var(--tab) 0 6px, var(--ground) 6px 12px);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--ink); overflow-wrap: anywhere; text-align: center;
+}
+.prose .link-card-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; margin: 0; }
+.prose .link-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 12px 20px; }
+.prose .link-card-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; font-weight: 700; color: var(--ink-deep); line-height: 1.5; }
+.prose .link-card-host { display: flex; align-items: center; gap: 8px; min-width: 0; font-family: var(--mono); font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; }
+.prose .link-card-host img { flex: none; width: 16px; height: 16px; margin: 0; border: 0; }
+@media (max-width: 640px) {
+  .prose .link-card { height: 88px; }
+  .prose .link-card-thumb { max-width: 40%; font-size: 9px; }
+  .prose .link-card-body { gap: 6px; padding: 8px 12px; }
+  .prose .link-card-title { font-size: 14px; }
+}

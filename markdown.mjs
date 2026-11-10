@@ -36,22 +36,73 @@ export const mermaidPlugin = {
 const el = (tagName, properties, children = []) => ({ type: 'element', tagName, properties, children });
 const text = (value) => ({ type: 'text', value });
 
-// 段落が GitHub リポジトリへのリンクだけを含むとき OGP カードに置き換える
-export const githubCard = {
-  name: 'github-card',
+const decode = (s) =>
+  s.replace(/&(#x[\da-f]+|#\d+|amp|lt|gt|quot|apos|#39);/gi, (_, e) =>
+    e[0] === '#' ? String.fromCodePoint(e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : +e.slice(1))
+      : { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }[e.toLowerCase()]);
+
+// <meta property="og:title" content="..."> などを拾う。属性の順序は問わない
+const attr = (tag, name) => tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i'))?.slice(1).find((v) => v != null);
+const parseOgp = (html) => {
+  const meta = {};
+  for (const [tag] of html.matchAll(/<meta\s[^>]*>/gi)) {
+    const key = (attr(tag, 'property') ?? attr(tag, 'name'))?.toLowerCase();
+    const content = attr(tag, 'content');
+    if (key && content != null && !(key in meta)) meta[key] = decode(content);
+  }
+  const icon = [...html.matchAll(/<link\s[^>]*>/gi)].map(([tag]) => tag).find((tag) => /^(shortcut )?icon$/i.test(attr(tag, 'rel') ?? ''));
+  return {
+    title: meta['og:title'] ?? meta['twitter:title'] ?? decode(html.match(/<title[^>]*>([^<]*)/i)?.[1] ?? '').trim(),
+    image: meta['og:image'] ?? meta['twitter:image'],
+    icon: icon ? decode(attr(icon, 'href') ?? '') : '/favicon.ico',
+  };
+};
+
+// ponytail: OGP はビルドごとに取りに行き、ビルド中だけメモリに持つ。記事やビルドが増えて遅くなったらファイルにキャッシュする
+// ponytail: 文字コードは UTF-8 前提。Shift_JIS のページは文字化けする
+const ogpCache = new Map();
+const fetchOgp = (href) => {
+  if (!ogpCache.has(href)) {
+    ogpCache.set(href, (async () => {
+      try {
+        const res = await fetch(href, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; link-card)' }, signal: AbortSignal.timeout(10_000) });
+        if (!res.ok) return {};
+        const ogp = parseOgp(await res.text());
+        for (const k of ['image', 'icon']) if (ogp[k]) ogp[k] = new URL(ogp[k], res.url).href;
+        return ogp;
+      } catch {
+        return {};
+      }
+    })());
+  }
+  return ogpCache.get(href);
+};
+
+// 段落がリンクひとつだけのとき、リンク先の OGP を左に画像・右にタイトルとドメインのカードにする
+// 画像がない/読めないときも左の枠は残し、ドメイン名のプレースホルダを見せる
+export const linkCard = {
+  name: 'link-card',
   element: {
     filter: ['p'],
-    visit(node) {
+    async visit(node) {
       const [link, ...rest] = (node.children ?? []).filter((c) => c.type !== 'text' || c.value.trim());
       if (rest.length || link?.tagName !== 'a') return;
-      const url = URL.parse(link.properties?.href);
-      if (url?.hostname !== 'github.com') return;
-      const path = url.pathname.replace(/\/+$/, '');
-      const [owner, repo] = path.split('/').filter(Boolean);
-      if (!repo) return;
-      return el('a', { class: 'gh-card', href: link.properties.href }, [
-        el('img', { src: `https://opengraph.githubassets.com/1${path}`, alt: `${owner}/${repo}`, width: 1200, height: 600, loading: 'lazy' }),
-        el('span', { class: 'gh-card-url' }, [text(`github.com${path}`)]),
+      const href = link.properties?.href;
+      const url = URL.parse(href);
+      if (!url?.protocol.startsWith('http')) return;
+      const { title, image, icon } = await fetchOgp(href);
+      return el('a', { class: 'link-card', href }, [
+        el('span', { class: 'link-card-thumb', 'aria-hidden': 'true' }, [
+          text(url.host),
+          ...(image ? [el('img', { src: image, alt: '', loading: 'lazy' })] : []),
+        ]),
+        el('span', { class: 'link-card-body' }, [
+          el('span', { class: 'link-card-title' }, [text(title || url.host + url.pathname.replace(/\/+$/, ''))]),
+          el('span', { class: 'link-card-host' }, [
+            ...(icon ? [el('img', { src: icon, alt: '', width: 16, height: 16, loading: 'lazy' })] : []),
+            text(url.host),
+          ]),
+        ]),
       ]);
     },
   },
