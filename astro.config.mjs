@@ -1,12 +1,12 @@
 import { defineConfig } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
-import { katexPlugin, mermaidPlugin, githubCard, alertPlugin, codeFrame, nierTheme } from './markdown.mjs';
+import { katexPlugin, mermaidPlugin, linkCard, alertPlugin, codeFrame, nierTheme } from './markdown.mjs';
 
 export default defineConfig({
   site: 'https://2424013.xyz',
   markdown: {
     syntaxHighlight: { type: 'shiki', excludeLangs: ['mermaid'] },
     shikiConfig: { theme: nierTheme, transformers: [codeFrame] },
-    processor: satteri({ features: { math: true }, hastPlugins: [katexPlugin, mermaidPlugin, githubCard, alertPlugin] }),
+    processor: satteri({ features: { math: true }, hastPlugins: [katexPlugin, mermaidPlugin, linkCard, alertPlugin] }),
   },
 });

@@ -59,8 +59,8 @@ const logNo = String((await getPosts()).length - n).padStart(4, '0');
 </Base>
 
 <script>
-  // ponytail: GitHub の OGP 画像は 429 で読めないことがあるので、失敗したら画像を外して URL 行だけ残す。常に出したいならビルド時に取得して同梱する
-  for (const img of document.querySelectorAll<HTMLImageElement>('.gh-card img')) {
+  // ponytail: OGP 画像はリンク先から直接読むので、429 やリンク切れで読めないことがある。失敗したら画像を外して文章だけ残す。常に出したいならビルド時に取得して同梱する
+  for (const img of document.querySelectorAll<HTMLImageElement>('.link-card img')) {
     img.onerror = () => img.remove();
     if (img.complete && !img.naturalWidth) img.remove();
   }
