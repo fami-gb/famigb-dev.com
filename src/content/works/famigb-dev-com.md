@@ -3,6 +3,7 @@ title: 2424013.xyz
 date: 2025-12-31
 description: このサイト。NieR:Automata の UI をモチーフにした、Astro 製のブログ兼ポートフォリオ。Vim のキー操作で歩き回れる。
 stack: [Astro, TypeScript, Cloudflare Workers, Satori]
+image: /works/famigb-dev-com.webp
 github: https://github.com/fami-gb/famigb-dev.com
 demo: https://2424013.xyz
 ---

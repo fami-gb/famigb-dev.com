@@ -3,6 +3,7 @@ title: saml-hands-on
 date: 2026-10-26
 description: SAML の IdP と SP を、SAML ライブラリを使わずに Python で自作した学習用リポジトリ。15 種の攻撃がすべて拒否されることを確かめる。
 stack: [Python, Flask, cryptography, SAML, XMLDSig]
+image: https://opengraph.githubassets.com/1/fami-gb/saml-hands-on
 github: https://github.com/fami-gb/saml-hands-on
 ---
 

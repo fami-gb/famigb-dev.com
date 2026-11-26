@@ -3,6 +3,7 @@ title: EDTCHP v2
 date: 2026-09-30
 description: サークル EDTC の公式サイト。Astro の静的サイトを Cloudflare Workers で配信し、ブログは管理ツールからの PR で公開する。
 stack: [Astro, TypeScript, Cloudflare Workers]
+image: /works/edtchp-v2.webp
 github: https://github.com/KAIT-EDTC/EDTCHP_v2
 demo: https://kaitedtc.com
 ---

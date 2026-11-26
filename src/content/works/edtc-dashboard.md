@@ -3,6 +3,7 @@ title: EDTC Dashboard
 date: 2026-05-15
 description: サークル EDTC のメンバー専用管理ツール。イベント・出欠・シフト・活動報告書・ブログ投稿を一つの Worker にまとめた。
 stack: [TypeScript, Hono, React Router, Zod, Drizzle, Cloudflare Workers, D1, R2, Panda CSS]
+image: /works/edtc-dashboard.webp
 github: https://github.com/KAIT-EDTC/dashboard
 ---
 

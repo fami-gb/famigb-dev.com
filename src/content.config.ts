@@ -19,7 +19,7 @@ const works = defineCollection({
     date: z.coerce.date(),
     description: z.string().default(''),
     stack: z.array(z.string()).default([]),
-    // public/ からのパス(例: /works/foo.png)
+    // public/ からのパス(例: /works/foo.png)、または外部画像の URL
     image: z.string().optional(),
     github: z.url().optional(),
     demo: z.url().optional(),
