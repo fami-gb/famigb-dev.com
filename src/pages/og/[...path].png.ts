@@ -70,7 +70,7 @@ export async function getStaticPaths() {
     title: 'fami-gb',
     titleSize: 120,
     titleWeight: 300,
-    meta: ['Backend Engineer / Vimmer / Univ. Student'],
+    meta: ['Web Engineer / Backend / Vimmer'],
     file: '~/index.md',
   };
   return [
